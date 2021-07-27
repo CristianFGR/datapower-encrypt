@@ -1,9 +1,8 @@
 package cl.kdu.authmethod.util;
 
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
@@ -19,23 +18,20 @@ import java.security.SecureRandom;
 @Service
 public class DataPowerUtil {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(DataPowerUtil.class);
-
     private static final String ENCRYPTION_TYPE = "AES/CBC/PKCS5Padding";
     private static final String ENCRYPTION_METHOD = "AES";
-
+    private static Logger LOGGER = LoggerFactory.getLogger(DataPowerUtil.class);
     private byte[] iv;
 
     /**
-     *
      * Metodo creado para encriptar peticiones que se dirijan a datapower
      *
      * @param content contenido de la petición a encriptar
-     * @param secret sharedKey proporcionada por datapower para encriptar
+     * @param secret  sharedKey proporcionada por datapower para encriptar
      * @return String con el contenido encriptado
      */
     public String encrypt(String content, String secret) {
-        LOGGER.info("EncryptDataPower valores de entrada {} ",content, secret);
+        LOGGER.info("EncryptDataPower valores de entrada {} ", content, secret);
         StringBuilder stringEncrypt = new StringBuilder();
         try {
             generadorIV();
@@ -53,22 +49,21 @@ public class DataPowerUtil {
             byte[] result = bb.array();
             stringEncrypt.append(Base64.encodeBase64String(result));
         } catch (Exception ex) {
-            LOGGER.error("error encriptando data ",ex);
+            LOGGER.error("error encriptando data ", ex);
         }
-        LOGGER.info("EncryptDataPower valores de salida {} ",stringEncrypt.toString());
+        LOGGER.info("EncryptDataPower valores de salida {} ", stringEncrypt.toString());
         return stringEncrypt.toString();
     }
 
     /**
-     *
      * Metodo creado para desencriptar una peticion que viene desde datapower
      *
      * @param content contenido de la petición a desencriptar
-     * @param secret sharedKey proporcionada por datapower para desencriptar
+     * @param secret  sharedKey proporcionada por datapower para desencriptar
      * @return String con el contenido desencriptado
      */
     public String decrypt(String content, String secret) {
-        LOGGER.info("DecryptDataPower valores de entrada {} ",content, secret);
+        LOGGER.info("DecryptDataPower valores de entrada {} ", content, secret);
         StringBuilder stringDecrypt = new StringBuilder();
         try {
             generadorIV();
@@ -84,7 +79,7 @@ public class DataPowerUtil {
         } catch (Exception ex) {
             LOGGER.error("error desencriptando data ", ex);
         }
-        LOGGER.info("DecryptDataPower valores de salida {} ",stringDecrypt.toString());
+        LOGGER.info("DecryptDataPower valores de salida {} ", stringDecrypt.toString());
         return stringDecrypt.toString();
     }
 

@@ -17,7 +17,9 @@ public class QRCodeEMVAuthInfo {
         this.cavv = cavv;
     }
 
-    public String getEci() { return eci; }
+    public String getEci() {
+        return eci;
+    }
 
     public void setEci(String eci) {
         this.eci = eci;

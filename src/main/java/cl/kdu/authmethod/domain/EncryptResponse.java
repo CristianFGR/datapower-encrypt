@@ -7,7 +7,7 @@ public class EncryptResponse {
 
     private String idf;
 
-    public EncryptResponse(){
+    public EncryptResponse() {
     }
 
     public EncryptResponse(String idf) {

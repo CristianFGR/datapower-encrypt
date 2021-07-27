@@ -6,6 +6,7 @@ import cl.kdu.authmethod.util.DataPowerUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,16 +28,44 @@ public class AutorizacionController {
     @ApiOperation(value = "Servicio de encryptacion request para autorizacion", response = EncryptResponse.class)
     @PostMapping(value = "/encrypt")
     public ResponseEntity<EncryptResponse> encryptarData(@RequestBody QRCodeEMVAuthorizeRequest qrCodeEMVAuthorizeRequest,
-                                                         @RequestHeader("DP-KEY") String dpKey) throws JsonProcessingException {
+                                                         @ApiParam(value = "valor de la llave",
+                                                                 required = true,
+                                                                 defaultValue = "CzczExArD2kHUBVFdUBIP2VJGBlJf1YCYjIdDWogHCk=")
+                                                         @RequestHeader("DP-KEY") final String dpKey) throws JsonProcessingException {
         String jsonStr = mapper.writeValueAsString(qrCodeEMVAuthorizeRequest);
         return new ResponseEntity<>(new EncryptResponse(dataPowerUtil.encrypt(jsonStr, dpKey)), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Servicio que desencrypta request para autorizacion", response = QRCodeEMVAuthorizeRequest.class)
     @PostMapping(value = "/decrypt")
-    public ResponseEntity<QRCodeEMVAuthorizeRequest> encryptarData(@RequestBody EncryptResponse encryptResponse,
-                                                         @RequestHeader("DP-KEY") String dpKey) throws JsonProcessingException {
+    public ResponseEntity<QRCodeEMVAuthorizeRequest> decryptData(@RequestBody EncryptResponse encryptResponse,
+                                                                 @ApiParam(value = "valor de la llave",
+                                                                         required = true,
+                                                                         defaultValue = "CzczExArD2kHUBVFdUBIP2VJGBlJf1YCYjIdDWogHCk=")
+                                                                 @RequestHeader("DP-KEY") final String dpKey) throws JsonProcessingException {
         QRCodeEMVAuthorizeRequest authRequest = mapper.readValue(dataPowerUtil.decrypt(encryptResponse.getIdf(), dpKey), QRCodeEMVAuthorizeRequest.class);
+        return new ResponseEntity<>(authRequest, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Servicio de encryptacion request para objeto generico", response = Object.class)
+    @PostMapping(value = "/generic-encrypt")
+    public ResponseEntity<EncryptResponse> encryptarDataGenerica(@RequestBody Object genericObject,
+                                                                 @ApiParam(value = "valor de la llave",
+                                                                         required = true,
+                                                                         defaultValue = "CzczExArD2kHUBVFdUBIP2VJGBlJf1YCYjIdDWogHCk=")
+                                                                 @RequestHeader("DP-KEY") final String dpKey) throws JsonProcessingException {
+        String jsonStr = mapper.writeValueAsString(genericObject);
+        return new ResponseEntity<>(new EncryptResponse(dataPowerUtil.encrypt(jsonStr, dpKey)), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Servicio que desencrypta request para objeto generico", response = Object.class)
+    @PostMapping(value = "/generic-decrypt")
+    public ResponseEntity<Object> decryptDataGenerica(@RequestBody EncryptResponse encryptResponse,
+                                                      @ApiParam(value = "valor de la llave",
+                                                              required = true,
+                                                              defaultValue = "CzczExArD2kHUBVFdUBIP2VJGBlJf1YCYjIdDWogHCk=")
+                                                      @RequestHeader("DP-KEY") final String dpKey) throws JsonProcessingException {
+        Object authRequest = mapper.readValue(dataPowerUtil.decrypt(encryptResponse.getIdf(), dpKey), Object.class);
         return new ResponseEntity<>(authRequest, HttpStatus.OK);
     }
 }
